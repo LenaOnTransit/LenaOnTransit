@@ -1,0 +1,49 @@
+body {
+    background-color: rgb(38, 37, 37);
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+h1, h2 {
+    color: #55CDFC; /* Light blue from the trans flag */
+}
+
+#milestones {
+    margin: 20px auto;
+    padding: 10px;
+    background-color: #f7a8b8; /* Light pink from the trans flag */
+    border-radius: 10px;
+    width: 60%;
+}
+
+#countdown {
+    margin: 20px auto;
+    padding: 10px;
+    background-color: #ffffff;
+    color: black;
+    border-radius: 10px;
+    width: 60%;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+#progress-container {
+    margin: 20px auto;
+    width: 60%;
+    height: 20px;
+    background-color: #ccc;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+#progress-bar {
+    height: 100%;
+    width: 0%;
+    background-color: #55CDFC; /* Light blue from trans flag */
+    transition: width 0.5s ease-in-out;
+}
