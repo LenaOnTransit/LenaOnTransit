@@ -4,9 +4,12 @@ body {
     font-family: Arial, sans-serif;
     text-align: center;
 }
-
 nav {
     background-color: black;
+    margin: 20px auto;
+    padding: 10px;
+    border-radius: 10px;
+    width: 60%;
 }
 
 h1, h2 {
