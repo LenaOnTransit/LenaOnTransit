@@ -5,14 +5,18 @@ body {
     text-align: center;
 }
 
+nav {
+    color: black;
+}
+
 h1, h2 {
-    color: #55CDFC; /* Light blue from the trans flag */
+    color: #55CDFC;
 }
 
 #milestones {
     margin: 20px auto;
     padding: 10px;
-    background-color: #f7a8b8; /* Light pink from the trans flag */
+    background-color: #f7a8b8;
     border-radius: 10px;
     width: 60%;
 }
@@ -44,6 +48,6 @@ ul {
 #progress-bar {
     height: 100%;
     width: 0%;
-    background-color: #55CDFC; /* Light blue from trans flag */
+    background-color: #55CDFC;
     transition: width 0.5s ease-in-out;
 }
