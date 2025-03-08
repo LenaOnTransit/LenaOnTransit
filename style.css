@@ -119,3 +119,27 @@ ul {
     transition: width 0.5s ease-in-out;
 }
 
+#hug-section {
+    margin: 20px auto;
+    padding: 15px;
+    background-color: #f7a8b8;
+    border-radius: 10px;
+    width: 60%;
+    text-align: center;
+}
+
+#hug-button {
+    background-color: #55CDFC;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#hug-button:hover {
+    background-color: #3a99d8;
+}
+
