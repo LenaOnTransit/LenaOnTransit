@@ -50,3 +50,14 @@ document.addEventListener("DOMContentLoaded", function () {
     setInterval(updateProgress, 1000);
     updateProgress();
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    let hugCount = localStorage.getItem("hugCount") || 0;
+    document.getElementById("hug-count").textContent = hugCount;
+
+    document.getElementById("hug-button").addEventListener("click", function () {
+        hugCount++;
+        document.getElementById("hug-count").textContent = hugCount;
+        localStorage.setItem("hugCount", hugCount);
+    });
+});
