@@ -1,51 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lena on Transit</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lena on Transit</title>
+
+  <!-- System font stack for speed; easy to swap later -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <meta name="theme-color" content="#0b0f16" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="description" content="Lena on Transit — milestones, vibes, and virtual hugs." />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <nav>
-        <h1>Lena on Transit</h1>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="about.html">About me</a></li>
-            <li><a href="rating.html">Top 10 lists</a></li>
-        </ul>
+  <header class="site-header">
+    <nav class="nav">
+      <a class="brand" href="index.html" aria-label="Lena on Transit home">
+        <span class="brand-mark" aria-hidden="true">🚋</span>
+        <span class="brand-text">Lena on Transit</span>
+      </a>
+
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu">
+        <span class="sr-only">Toggle menu</span>
+        ☰
+      </button>
+
+      <ul id="nav-menu" class="nav-menu">
+        <li><a class="nav-link" href="index.html" aria-current="page">Home</a></li>
+        <li><a class="nav-link" href="about.html">About me</a></li>
+        <li><a class="nav-link" href="rating.html">Top 10 lists</a></li>
+        <li><button id="theme-toggle" class="chip" type="button" aria-pressed="true">Dark</button></li>
+      </ul>
     </nav>
+  </header>
 
-    <main>
-        <section id="milestones">
-            <h2>Milestones</h2>
-            <ul>
-                <li>Starting transition: <span id="milestone1"></span></li>
-            </ul>
-        </section>
+  <main id="main" class="container">
+    <section class="card">
+      <header class="card-header">
+        <h2>Milestones</h2>
+        <p class="muted">Track your next step and watch the days melt away.</p>
+      </header>
+      <ul class="list">
+        <li>
+          Starting transition:
+          <strong id="milestone1">—</strong>
+        </li>
+      </ul>
+      <div class="controls">
+        <label class="field">
+          <span>Date</span>
+          <input type="date" id="milestone-date" />
+        </label>
+        <button id="save-milestone" class="btn">Save</button>
+        <button id="clear-milestone" class="btn ghost">Clear</button>
+      </div>
 
-        <section id="countdown">
-            <h2>Next Milestone Countdown</h2>
-            <p id="countdown-timer"></p>
-        </section>
+      <div id="progress" class="progress">
+        <div id="progress-bar" class="progress-bar" style="width:0%"></div>
+      </div>
+    </section>
 
-        <section id="hug-section">
-            <h2>Send a Virtual Hug 🤗</h2>
-            <p>Hugs given: <span id="hug-count">0</span></p>
-            <button id="hug-button">Give a Hug</button>
-        </section>
-        
-        <section id="donate">
-            <form action="https://www.paypal.com/donate" method="post" target="_top">
-                <input type="hidden" name="hosted_button_id" value="EACAWH8HZZJJE" />
-                <input type="image" src="https://www.paypalobjects.com/en_US/NL/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
-                <img alt="" border="0" src="https://www.paypal.com/en_NL/i/scr/pixel.gif" width="1" height="1" />
-                </form>
-        </section>                
-    </main>
+    <section class="card">
+      <header class="card-header">
+        <h2>Next Milestone Countdown</h2>
+      </header>
+      <p id="countdown-timer" class="countdown">—</p>
+    </section>
 
-    <script src="script.js"></script>
+    <section class="card accent">
+      <header class="card-header">
+        <h2>Send a Virtual Hug 🤗</h2>
+      </header>
+      <p>Hugs given: <strong id="hug-count">0</strong></p>
+      <div class="controls">
+        <button id="hug-button" class="btn primary">Give a Hug</button>
+        <button id="hug-reset" class="btn ghost">Reset</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <header class="card-header">
+        <h2>Support</h2>
+      </header>
+      <form action="https://www.paypal.com/donate" method="post" target="_top" class="donate">
+        <input type="hidden" name="hosted_button_id" value="EACAWH8HZZJJE" />
+        <button type="submit" class="btn pay">Donate with PayPal</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p class="muted">Made with ❤️ and public transit wait times.</p>
+  </footer>
+
+  <script src="script.js" defer></script>
 </body>
 </html>
-
