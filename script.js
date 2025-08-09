@@ -1,63 +1,147 @@
-const startDate = new Date(2024, 1, 19); // February 19, 2024
-const endDate = new Date(2026, 7, 19); // August 19, 2026
+// ===== Utilities =====
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-const milestones = [
-    { name: "Starting transition", date: new Date(2026, 8, 19) }
-];
+const storage = {
+  get(key, fallback = null) {
+    try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
+    catch { return fallback; }
+  },
+  set(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+};
 
-document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("milestone1").textContent = milestones[0].date.toDateString();
+// ===== Nav: mobile + theme =====
+(function navAndTheme() {
+  const btn = $('.nav-toggle');
+  const menu = $('#nav-menu');
+  if (btn && menu) {
+    btn.addEventListener('click', () => {
+      const open = menu.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(open));
+    });
+  }
 
+  // Theme toggle
+  const themeBtn = $('#theme-toggle');
+  const savedTheme = storage.get('theme'); // 'dark' | 'light'
+  if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+  syncThemeLabel();
 
-    const countdownSection = document.getElementById("countdown");
-    const progressBarContainer = document.createElement("div");
-    progressBarContainer.id = "progress-container";
+  themeBtn?.addEventListener('click', () => {
+    const html = document.documentElement;
+    const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    storage.set('theme', next);
+    syncThemeLabel();
+  });
 
-    const progressBar = document.createElement("div");
-    progressBar.id = "progress-bar";
+  function syncThemeLabel() {
+    const mode = document.documentElement.getAttribute('data-theme') || 'dark';
+    const btn = $('#theme-toggle');
+    if (!btn) return;
+    btn.textContent = mode === 'dark' ? 'Dark' : 'Light';
+    btn.setAttribute('aria-pressed', String(mode === 'dark'));
+  }
+})();
 
-    progressBarContainer.appendChild(progressBar);
-    countdownSection.appendChild(progressBarContainer);
+// ===== Milestone: date, countdown, progress =====
+(function milestone() {
+  const dateEl = $('#milestone-date');
+  const saveBtn = $('#save-milestone');
+  const clearBtn = $('#clear-milestone');
+  const labelEl = $('#milestone1');
+  const countdownEl = $('#countdown-timer');
+  const bar = $('#progress-bar');
 
-    function updateProgress() {
-        const now = new Date();
+  // Load
+  const saved = storage.get('milestone'); // { dateISO, createdISO }
+  if (saved?.dateISO) {
+    dateEl.value = saved.dateISO;
+    labelEl.textContent = new Date(saved.dateISO).toLocaleDateString();
+  }
 
-        let nextMilestone = null;
-        for (let milestone of milestones) {
-            if (milestone.date > now) {
-                nextMilestone = milestone;
-                break;
-            }
-        }
+  // Establish "created" date for progress baseline
+  const createdISO = saved?.createdISO || new Date().toISOString();
+  if (!saved?.createdISO) storage.set('milestone', { ...saved, createdISO });
 
-        if (nextMilestone) {
-            const timeDiff = nextMilestone.date - now;
-            const days = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)); // Convert milliseconds to days
-            document.getElementById("countdown-timer").textContent = 
-                `Next: ${nextMilestone.name} in ${days} days!`;
-        } else {
-            document.getElementById("countdown-timer").textContent = "All milestones reached!";
-        }
+  saveBtn?.addEventListener('click', () => {
+    if (!dateEl.value) return;
+    storage.set('milestone', { dateISO: dateEl.value, createdISO });
+    labelEl.textContent = new Date(dateEl.value).toLocaleDateString();
+    tick();
+  });
 
-        const totalDuration = endDate - startDate;
-        const elapsedTime = now - startDate;
-        let progressPercent = (elapsedTime / totalDuration) * 100;
-        progressPercent = Math.max(0, Math.min(progressPercent, 100)); // Ensure within 0-100%
+  clearBtn?.addEventListener('click', () => {
+    storage.set('milestone', { dateISO: null, createdISO });
+    dateEl.value = '';
+    labelEl.textContent = '—';
+    countdownEl.textContent = '—';
+    bar.style.width = '0%';
+  });
 
-        progressBar.style.width = progressPercent + "%";
+  function formatDelta(ms) {
+    const s = Math.max(0, Math.floor(ms / 1000));
+    const d = Math.floor(s / 86400);
+    const h = Math.floor((s % 86400) / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const ss = s % 60;
+    return `${d}d ${h}h ${m}m ${ss}s`;
+  }
+
+  function tick() {
+    const data = storage.get('milestone');
+    if (!data?.dateISO) return;
+
+    const target = new Date(data.dateISO + 'T00:00:00');
+    const now = new Date();
+    const delta = target - now;
+
+    if (delta <= 0) {
+      countdownEl.textContent = 'It’s here! 🌟';
+      bar.style.width = '100%';
+      return;
     }
 
-    setInterval(updateProgress, 1000);
-    updateProgress();
-});
+    countdownEl.textContent = formatDelta(delta);
 
-document.addEventListener("DOMContentLoaded", function () {
-    let hugCount = localStorage.getItem("hugCount") || 0;
-    document.getElementById("hug-count").textContent = hugCount;
+    // Progress from createdISO -> target
+    const start = new Date(createdISO);
+    const total = +target - +start;
+    const progressed = +now - +start;
+    const pct = Math.max(0, Math.min(100, (progressed / total) * 100));
+    bar.style.width = `${pct}%`;
+  }
 
-    document.getElementById("hug-button").addEventListener("click", function () {
-        hugCount++;
-        document.getElementById("hug-count").textContent = hugCount;
-        localStorage.setItem("hugCount", hugCount);
-    });
-});
+  tick();
+  setInterval(tick, 1000);
+})();
+
+// ===== Hugs: counter with persistence =====
+(function hugs() {
+  const btn = $('#hug-button');
+  const reset = $('#hug-reset');
+  const countEl = $('#hug-count');
+
+  let count = Number(storage.get('hugCount', 0)) || 0;
+  countEl.textContent = count;
+
+  btn?.addEventListener('click', () => {
+    count += 1;
+    countEl.textContent = count;
+    storage.set('hugCount', count);
+    microPop(btn);
+  });
+
+  reset?.addEventListener('click', () => {
+    count = 0;
+    countEl.textContent = count;
+    storage.set('hugCount', count);
+  });
+
+  function microPop(el) {
+    el.animate(
+      [{ transform: 'scale(1)' }, { transform: 'scale(1.07)' }, { transform: 'scale(1)' }],
+      { duration: 150, easing: 'ease-out' }
+    );
+  }
+})();
